@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using LeaveManagmentClean.Application.Contracts.Persistence;
-using LeaveManagmentClean.Application.Exceptions;
 using MediatR;
 
 namespace LeaveManagmentClean.Application.Features.LeaveType.Queries.GetLeaveTypeDetails
@@ -20,12 +19,7 @@ namespace LeaveManagmentClean.Application.Features.LeaveType.Queries.GetLeaveTyp
             CancellationToken cancellationToken)
         {
             var leaveType = await _leaveTypeRepository.GetByIdAsync(request.Id);
-            
-            if (leaveType is null)
-            {
-                throw new NotFoundException(nameof(LeaveType), request.Id);
-            }
-            
+
             var leaveTypeDto = _mapper.Map<LeaveTypeDetailsDto>(leaveType);
 
             return leaveTypeDto;
