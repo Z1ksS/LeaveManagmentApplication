@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LeaveManagmentClean.Application.Contracts.Persistence;
+using LeaveManagmentClean.Application.Exceptions;
 using MediatR;
 
 namespace LeaveManagmentClean.Application.Features.LeaveType.Commands.CreateLeaveType
@@ -17,6 +18,14 @@ namespace LeaveManagmentClean.Application.Features.LeaveType.Commands.CreateLeav
         
         public async Task<int> Handle(CreateLeaveTypeCommand request, CancellationToken cancellationToken)
         {
+            var validator = new CreateLeaveTypeCommandValidator(_leaveTypeRepository);
+            var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+            if (!validationResult.IsValid)
+            {
+                throw new BadRequest("Invalid Leavetype", validationResult);
+            }
+            
             var leaveTypeToCreate = _mapper.Map<Domain.LeaveType>(request);
 
             await _leaveTypeRepository.CreateAsync(leaveTypeToCreate);
